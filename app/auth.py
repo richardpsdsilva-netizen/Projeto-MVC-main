@@ -1,10 +1,10 @@
-#Lógica de autenticação
+# Lógica de autenticação
 
-# 1. Hash e verificação de senhas com bcrypt
+# 1. Hash e verificar com bcrypt
 
 # 2. Geração de token JWT
 
-# 3. Leitura e validação do token vindo do cookie
+# 3. Leitura e validação do token do cookie
 
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
@@ -17,7 +17,7 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTE = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTE")
+ACCES_TOKEN_EXPIRE_MINUTE = os.getenv("ACCES_TOKEN_EXPIRE_MINUTE")
 
 # Configurar o algoritmo do hash = bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -28,18 +28,17 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def hash_senha(senha: str):
     return pwd_context.hash(senha)
 
-def verificar_senha(senha: str, senha_hash: str):
-    # A ordem correta é: (senha_pura, senha_criptografada)
-    return pwd_context.verify(senha, senha_hash)
+def verificar_senha(senha: str, senah_hash: str):
+    return pwd_context.verify(senha, senah_hash)
 
 # Funções do tokem JWT
 
 def criar_token(dados: dict):
 
     payload = dados.copy()
-   
-    #Define quando o token expira
-    expira = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTE)
+
+    #Define qaundo token expira
+    expira = datetime.now(timezone.utc) + timedelta(minutes=int(ACCES_TOKEN_EXPIRE_MINUTE))
     payload.update({"exp": expira})
 
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
@@ -61,25 +60,24 @@ def get_usuario_logado(request: Request):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Não autenticado"
         )
-   
     try:
         payload = decodificar_token(token)
         email: str = payload.get("sub")
 
-        if email is None:
+        if not email:
             raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token inválido"
+            detail="Token invalido"
         )
-
+       
         return payload
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token inválido ou expirado"
+            detail="Token invalido ou expirado"
         )
-
-def get_usuario_opicional(request: Request):
+   
+def get_usuario_opcional(request: Request):
     try:
         return get_usuario_logado(request)
     except HTTPException:

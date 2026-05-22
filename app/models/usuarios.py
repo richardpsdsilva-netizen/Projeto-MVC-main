@@ -3,18 +3,16 @@ from sqlalchemy.sql import func
 from app.database import Base
 
 #Tabela
-class Usuario (Base):
+class Usuario(Base):
     __tablename__ = "usuarios"
 
-    id = Column(Integer, primary_key = True ,autoincrement = True )
-    nome = Column(String (100) , nullable = False )  
-    email = Column(String (150) , unique = True , nullable = False)
-    senha_hash = Column(String (255) , nullable = False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    nome = Column(String(100), nullable=False)
+    email = Column(String(150), unique=True, nullable=False)
+    senha_hash = Column(String(255), nullable=False)
+    #perfil do usuario: "admin" ou "operados"
+    role = Column(String(20), nullable=False, default="operador")
 
-    #PERFIL DO USUARIO: "ADMIN" OU "FUNCIONARIO"
-    role = Column(String (20) , nullable = False , default = "operador")
-
-    #PERMITE DESARIVAR UM USUARIO SEM EXCLUIR ELE DO DB
-    ativo = Column(Boolean , default = True)
-    criando_em = Column(DateTime , server_default = func.now())
-
+    #Permite desativar um usuario sem excluir ele do db
+    ativo = Column(Boolean, default=True)
+    criando_em = Column(DateTime, server_default=func.now())
